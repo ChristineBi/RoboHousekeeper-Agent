@@ -15,7 +15,7 @@
 > **目前处于 M0 阶段**: 仅有最小可跑的 mock pipeline,真实的 RoboBrain / RoboCasa 接入将在 M1 完成。
 
 ```bash
-git clone https://github.com/ChristineBi/robohousekeeper-agent.git
+git clone https://github.com/ChristineBi/robohousekeeper-agent
 cd robohousekeeper-agent
 pip install -e .
 
