@@ -29,13 +29,28 @@ from robohousekeeper_agent.skills import SkillLibrary
 
 SKILLS_DIR = Path(__file__).resolve().parent.parent / "src" / "robohousekeeper_agent" / "skills" / "library"
 
+# Shorthand task names → instruction strings.
+# Add new entries here as the skill library grows.
+TASK_INSTRUCTIONS: dict[str, str] = {
+    "wipe_table":      "please wipe the table",
+    "pickup_obstacle": "please move the obstacle",
+    "navigate":        "please navigate to the target",
+    "improve_policy":  "please improve the policy",
+}
+
 
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument(
+        "--task",
+        choices=sorted(TASK_INSTRUCTIONS),
+        default=None,
+        help="Shorthand task name. Overrides --instruction when set.",
+    )
+    p.add_argument(
         "--instruction",
         default="please wipe the table",
-        help="Natural-language goal to give the agent.",
+        help="Natural-language goal (ignored if --task is set).",
     )
     p.add_argument(
         "--scenario",
@@ -46,10 +61,12 @@ def main() -> int:
     p.add_argument("--home-dir", default=None, help="Where to store MEMORY.md etc.")
     args = p.parse_args()
 
+    instruction = TASK_INSTRUCTIONS[args.task] if args.task else args.instruction
+
     home_dir = Path(args.home_dir) if args.home_dir else Path(tempfile.mkdtemp(prefix="rhk_"))
     print(f"[demo] home dir: {home_dir}")
     print(f"[demo] scenario: {args.scenario}")
-    print(f"[demo] instruction: {args.instruction!r}")
+    print(f"[demo] instruction: {instruction!r}")
     print()
 
     library = SkillLibrary(SKILLS_DIR)
@@ -75,7 +92,7 @@ def main() -> int:
     )
 
     world_state = {"target_table": "table_1", "target": "table_1"}
-    report = orch.run(args.instruction, world_state=world_state)
+    report = orch.run(instruction, world_state=world_state)
 
     print()
     print("=" * 60)
