@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robohousekeeper-agent"
+version = "0.0.1"
+description = "Hermes-inspired embodied agent on a RoboOS / RoboBrain backbone for household robotics."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Your Name" }
+]
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Real RoboCasa / RoboBrain bring in heavy dependencies — keep them
+# opt-in so the M0 mock pipeline stays lightweight.
+sim = [
+    # "robocasa",  # add when wiring up RoboCasa
+    # "robosuite",
+]
+brain = [
+    # "transformers",
+    # "torch",
+]
+dev = [
+    "pytest>=7",
+    "ruff",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
