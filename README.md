@@ -21,6 +21,8 @@ pip install -e .
 
 # 跑一个 mock demo:模拟"擦桌子被打断"的场景
 python scripts/run_demo.py --task wipe_table --scenario interrupted
+#或者
+python scripts/run_demo.py --instruction "please wipe the table" 
 ```
 
 
