@@ -42,14 +42,6 @@ class SelfEval:
                 f"High retry ratio ({retry_ratio:.2f}) up to subtask {current_index}/"
                 f"{len(plan)}. Consider lowering preconditions or reviewing the failing skill."
             )
-        # Warn only when replanning has caught up with successes — meaning
-        # every replan so far has not produced a successful subtask afterward.
-        # A healthy replan (inserted pickup → wipe succeeds) has succeeded > replans.
-        if report.replans > 0 and report.replans >= report.subtasks_succeeded:
-            return (
-                f"Replanned {report.replans} time(s) without forward progress — "
-                "scene assumptions may be stale, force a heartbeat scan."
-            )
         return None
 
     def episode_summary(self, report: "RunReport") -> str:
@@ -59,10 +51,16 @@ class SelfEval:
         consumption by the offline skill-patching cron.
         """
         ok = "✓" if report.status.value == "succeeded" else "✗"
-        return (
+        summary = (
             f"{ok} '{report.instruction}': "
             f"{report.subtasks_succeeded}/{report.subtasks_attempted} subtasks succeeded, "
             f"{report.retries} retries, {report.replans} replans, "
             f"{report.inserted_subtasks} subtasks inserted. "
             f"Final status: {report.status.value}."
         )
+        if report.replans > 0 and report.status.value != "succeeded":
+            summary += (
+                f" ⚠ Replanned {report.replans} time(s) but task still failed — "
+                "scene assumptions may be stale."
+            )
+        return summary
