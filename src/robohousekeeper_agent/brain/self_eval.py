@@ -42,8 +42,10 @@ class SelfEval:
                 f"High retry ratio ({retry_ratio:.2f}) up to subtask {current_index}/"
                 f"{len(plan)}. Consider lowering preconditions or reviewing the failing skill."
             )
-        if report.replans > 0 and current_index == report.replans:
-            # Just replanned, but no other progress
+        # Warn only when replanning has caught up with successes — meaning
+        # every replan so far has not produced a successful subtask afterward.
+        # A healthy replan (inserted pickup → wipe succeeds) has succeeded > replans.
+        if report.replans > 0 and report.replans >= report.subtasks_succeeded:
             return (
                 f"Replanned {report.replans} time(s) without forward progress — "
                 "scene assumptions may be stale, force a heartbeat scan."
